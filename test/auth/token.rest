@@ -1,0 +1,7 @@
+### Authenticate access-token
+GET http://localhost:3003/auth/token/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiVGVzdGluZyBBY2NvdW50IiwiZW1haWwiOiJweWZpc3NoQGdtYWlsLmNvbSIsInBob25lIjpudWxsLCJiaXJ0aGRheSI6IkludmFsaWQgZGF0ZSIsImF2YXRhciI6bnVsbCwiaWF0IjoxNjY3MTQ4NDkyLCJleHAiOjE2NjcxNDkzOTIsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6MzAwMy8ifQ.yWAqyoGfC5xFEK1dN61oH1Q8qTFJOhh867TXpL1xcPM
+
+### Get new access-token by refresh-token
+GET http://localhost:3003/auth/token/new/
+Cookie: C4RFT=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InB5Zmlzc2hAZ21haWwuY29tIiwiaWF0IjoxNjY3MTQ3NzIyLCJleHAiOjE2NzQ5MjM3MjIsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6MzAwMy8ifQ.8H7prTeoN5h046ei88UK9b1ZccvGtuwMrLkFWYqHw-M; Domain=localhost; Path=/

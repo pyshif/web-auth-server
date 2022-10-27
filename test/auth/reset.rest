@@ -1,0 +1,9 @@
+###
+POST http://localhost:3003/auth/reset/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiVGVzdGluZyBBY2NvdW50IiwiZW1haWwiOiJweWZpc3NoQGdtYWlsLmNvbSIsInBob25lIjpudWxsLCJiaXJ0aGRheSI6IkludmFsaWQgZGF0ZSIsImF2YXRhciI6bnVsbCwiaWF0IjoxNjY3MjMwMzI3LCJleHAiOjE2NjcyMzEyMjcsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6MzAwMy8ifQ.MoyQhVhO3ZRk5ws_TUNty-sawadOoKrUJehqElEbBnY
+
+{
+    "newPassword": "Qq123456@",
+    "confirmPassword": "Qq123456@"
+}

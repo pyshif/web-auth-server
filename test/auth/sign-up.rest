@@ -1,0 +1,41 @@
+### api: health
+### it should be success. 200OK
+GET http://localhost:3003/auth/health/
+
+### api: signup
+### it should be success
+POST http://localhost:3003/auth/signup/
+Content-Type: application/json
+
+{
+    "name": "Testing Account",
+    "email": "example@mail.unknown",
+    "password": "Aa123456@",
+    "confirmPassword": "Aa123456@",
+    "passwordHint": "it was a nice day"
+}
+### api: signup
+### it should be failed (wrong password format)
+POST http://localhost:3003/auth/signup/
+Content-Type: application/json
+
+{
+    "name": "Testing Account",
+    "email": "example@mail.com",
+    "password": "A",
+    "confirmPassword": "A",
+    "passwordHint": "it was a nice day"
+}
+
+### api: signup
+### it should be failed (wrong confirm password)
+POST http://localhost:3003/auth/signup/
+Content-Type: application/json
+
+{
+    "name": "Testing Account",
+    "email": "example@mail.com",
+    "password": "Aa123456@",
+    "confirmPassword": "A",
+    "passwordHint": "it was a nice day"
+}

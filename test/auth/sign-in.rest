@@ -1,0 +1,9 @@
+### api: sign-in
+### it should be success
+POST http://localhost:3003/auth/signin/
+Content-Type: application/json
+
+{
+    "email": "example@gmail.com", 
+    "password": "Aa123456@"
+}

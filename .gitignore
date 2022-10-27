@@ -1,0 +1,15 @@
+node_modules
+tmp.*
+.env
+.env.dev
+.env.prod
+config.json
+dist
+.DS_Store
+*.rest
+
+/sessions
+/public/uploads/
+/download
+/try
+tmp

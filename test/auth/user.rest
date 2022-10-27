@@ -1,0 +1,43 @@
+###
+POST http://localhost:3003/auth/user/name/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiVGVzdGluZyBBY2NvdW50IiwiZW1haWwiOiJweWZpc3NoQGdtYWlsLmNvbSIsInBob25lIjpudWxsLCJiaXJ0aGRheSI6IkludmFsaWQgZGF0ZSIsImF2YXRhciI6bnVsbCwiaWF0IjoxNjY3MjM5OTk1LCJleHAiOjE2NjcyNDA4OTUsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6MzAwMy8ifQ.5ld1rBpZOZHV28tdEql90mJ_dKf-BbHNx_7Vz4d1Iqo
+
+{
+    "username": "Liz"
+}
+
+###
+POST http://localhost:3003/auth/user/birthday/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiVGVzdGluZyBBY2NvdW50IiwiZW1haWwiOiJweWZpc3NoQGdtYWlsLmNvbSIsInBob25lIjpudWxsLCJiaXJ0aGRheSI6IkludmFsaWQgZGF0ZSIsImF2YXRhciI6bnVsbCwiaWF0IjoxNjY3MjM5OTk1LCJleHAiOjE2NjcyNDA4OTUsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6MzAwMy8ifQ.5ld1rBpZOZHV28tdEql90mJ_dKf-BbHNx_7Vz4d1Iqo
+
+{
+    "birthday": "1991-01-01"
+}
+
+### changing user phone
+POST http://localhost:3003/auth/user/phone/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiTGl6IiwiZW1haWwiOiJweWZpc3NoQGdtYWlsLmNvbSIsInBob25lIjoiMDkxMTExMTExMSIsImJpcnRoZGF5IjoiMTk5MS0wMS0wMSIsImF2YXRhciI6bnVsbCwiaWF0IjoxNjY3MjQwNDY4LCJleHAiOjE2NjcyNDEzNjgsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6MzAwMy8ifQ.NroM7yv-_qSSQLOrJBiLX8Pp_TVy3L4K0HA5HFqYa3Y
+
+{
+    "phone": "0911111111"
+}
+
+### changing user email
+POST http://localhost:3003/auth/user/email/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiVGVzdGluZyBBY2NvdW50IiwiZW1haWwiOiJweWZpc3NoQGdtYWlsLmNvbSIsInBob25lIjpudWxsLCJiaXJ0aGRheSI6IkludmFsaWQgZGF0ZSIsImF2YXRhciI6bnVsbCwiaWF0IjoxNjY3MzAyMDgyLCJleHAiOjE2NjczMDI5ODIsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6MzAwMy8ifQ.inNgoH-91wL-PFY7ClNSek4A-e-4r89BBQPnxTlC5kM
+
+{
+    "email": "example@gmail.com"
+}
+
+### 
+GET http://localhost:3003/auth/user/email/:token
+Content-Type: application/json
+
+### deleting user
+DELETE http://localhost:3003/auth/user/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiVGVzdGluZyBBY2NvdW50IiwiZW1haWwiOiJleGFtcGxlQGdtYWlsLmNvbSIsInBob25lIjpudWxsLCJiaXJ0aGRheSI6IkludmFsaWQgZGF0ZSIsImF2YXRhciI6bnVsbCwiaWF0IjoxNjY3NDA2MzczLCJleHAiOjE2Njc0MDcyNzMsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6MzAwMy8ifQ.2EfEqsNgiAJycmoNup8_czFK68pG_cTOqN4xOJnwJf8

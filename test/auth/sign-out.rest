@@ -1,0 +1,4 @@
+### clear refresh token
+
+DELETE http://localhost:3003/auth/signout/
+Cookie: C4RFT=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InB5Zmlzc2hAZ21haWwuY29tIiwiaWF0IjoxNjY3MjQwNDY4LCJleHAiOjE2NzUwMTY0NjgsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6MzAwMy8ifQ.jMdfWVkISO--cinP9xJZAx_1penwsz3iEIYSuiyKBTE; Domain=localhost; Path=/

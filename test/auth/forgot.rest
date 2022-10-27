@@ -1,0 +1,17 @@
+### Forgot password application
+POST http://localhost:3003/auth/forgot/
+Content-Type: application/json
+
+{
+    "email": "example@gmail.com",
+    "passwordHint": "it was a nice day"
+}
+
+### Rest password by link
+POST http://localhost:3003/auth/forgot/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InB5Zmlzc2hAZ21haWwuY29tIiwiaWF0IjoxNjY3MzAyMzE2LCJleHAiOjE2NjczMDMyMTYsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6MzAwMy8ifQ.k8ILstH6KpR2Es4Puqfr52jkDiSlBBXNxsGyuxLQ81k
+Content-Type: application/json
+
+{
+    "newPassword": "Bb123456@",
+    "confirmPassword": "Bb123456@"
+}
