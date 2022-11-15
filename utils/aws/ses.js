@@ -91,8 +91,11 @@ async function sendWelcomeEmail(to) {
 }
 
 async function sendFeedbackEmail(feedback) {
-    const subject = 'Feedback from web-auth';
+    const subject = 'Feedback - web-auth project';
     const htmlData = `<p>${feedback}</p>`
+    const to = process.env.AWS_SES_HELPER;
+    // console.log('feedback :>> ', feedback);
+    return await sendEmail(to, htmlData, subject);
 }
 
 module.exports = {
@@ -100,5 +103,6 @@ module.exports = {
     sendValidationEmail,
     sendResetPasswordLinkEmail,
     sendChangingEmail,
-    sendWelcomeEmail
+    sendWelcomeEmail,
+    sendFeedbackEmail,
 };
