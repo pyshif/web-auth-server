@@ -17,11 +17,11 @@ router.post('/', validateForgotPayload, async (req, res) => {
         if (rows.length < 1) {
             throw new Error('invalid user!');
         }
+        // compare hash password hint
+        const user = rows[0];
         if (!user.password_hint) {
             return res.status(403).end('invalid password hint!');
         }
-        // compare hash password hint
-        const user = rows[0];
         if (!await bcrypt.compare(passwordHint, user.password_hint)) {
             throw new Error('invalid password hint!');
         }
