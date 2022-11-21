@@ -1,16 +1,19 @@
 const express = require('express');
 const router = express.Router();
 const { authenticateAccessToken } = require('../../middlewares/jwt/auth');
-const { sendFeedbackEmail } = require('../../utils/aws/ses');
+const { sendFeedbackEmail, sendFeedbackEmailFrom } = require('../../utils/aws/ses');
 
 router.post('/',
     authenticateAccessToken,
     validateFeedback,
     async (req, res) => {
         const { feedback } = req.body;
+        const { user } = req;
 
         try {
-            const response = sendFeedbackEmail(feedback);
+            const from = { email: user.email, name: user.name };
+            // const response = sendFeedbackEmail(feedback);
+            const response = sendFeedbackEmailFrom(feedback, from);
             if (response instanceof Error) {
                 throw new Error('send feedback email failed!');
             }

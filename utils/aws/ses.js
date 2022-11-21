@@ -98,6 +98,14 @@ async function sendFeedbackEmail(feedback) {
     return await sendEmail(to, htmlData, subject);
 }
 
+async function sendFeedbackEmailFrom(feedback, from) {
+    const subject = `Feedback - ${from.email} | ${from.name}`;
+    const htmlData = `<p>${feedback}</p>`
+    const to = process.env.AWS_SES_HELPER;
+    // console.log('feedback :>> ', feedback);
+    return await sendEmail(to, htmlData, subject);
+}
+
 module.exports = {
     sendEmail,
     sendValidationEmail,
@@ -105,4 +113,5 @@ module.exports = {
     sendChangingEmail,
     sendWelcomeEmail,
     sendFeedbackEmail,
+    sendFeedbackEmailFrom,
 };
