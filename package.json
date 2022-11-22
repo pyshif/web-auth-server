@@ -4,8 +4,11 @@
     "description": "",
     "private": true,
     "scripts": {
-        "start": "nodemon ./bin/www --dev",
-        "server": "nodemon ./bin/www --prod"
+        "start": "pm2 start ecosystem.config.js",
+        "poststart": "pm2 log --out",
+        "server": "pm2 start ecosystem.config.js --env production",
+        "stop": "pm2 delete web-auth-server",
+        "log": "pm2 log --lines 150"
     },
     "author": "",
     "license": "ISC",
