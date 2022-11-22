@@ -88,6 +88,53 @@ web-auth 以及 web-auth-server 是實作 JWT（Json Web Token）、Google Sign 
 
 ## Google 第三方登入
 
+使用者登入流程主要在前端完成，後端負責驗證來自前端的 Google ID Token。
+
+驗證使用 [Google Auth Library for Node.js](https://github.com/googleapis/google-auth-library-nodejs)
+
+驗證通過後：
+
+- 生成 Access Token、Refresh Token
+- 存儲 Refresh Token 至資料庫
+- 回傳 Access / Refresh Token（詳見 [JWT 管理](#jwt-管理)）
+
+<details>
+<summary>驗證 Google ID Token（中間件）</summary>
+
+```js
+// middlewares/jwt/auth.js
+const { OAuth2Client } = require('google-auth-library');
+const googleAuthClient = new OAuth2Client(process.env.GOOGLE_SIGNIN_CLIENT_ID);
+async function authenticateGoogleIDToken(req, res, next) {
+    const token = req.headers['authorization'].split(' ').pop();
+    // console.log('token :>> ', token);
+    if (!token) return res.status(401).end('please supply valid google-token!');
+
+    await verifyGoogleIDToken(token, (err, user) => {
+        if (err) return res.status(401).end(err.message);
+        req.user = {
+            ...user,
+            token,
+        };
+        next();
+    });
+}
+// common function
+async function verifyGoogleIDToken(token, callback) {
+    try {
+        const ticket = await googleAuthClient.verifyIdToken({
+            idToken: token,
+            audience: [process.env.GOOGLE_SIGNIN_CLIENT_ID]
+        });
+        callback(null, ticket.getPayload());
+    } catch (error) {
+        callback(error, null);
+    }
+}
+```
+
+</details>
+
 <p align="right">
     <a href="#目錄">回目錄</a>
 </p>
