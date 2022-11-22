@@ -46,11 +46,68 @@ web-auth 以及 web-auth-server 是實作 JWT（Json Web Token）、Google Sign 
 
 ## 安裝
 
+1. Clone
+
+    ```bash
+    git clone https://github.com/pyshif/web-auth-server.git
+    ```
+
+2. 依照 `.env.example` 內容，建立 `.env.dev`、`.env.prod` 環境檔於專案目錄底下
+
+3. 安裝 [XAMPP](https://www.apachefriends.org) 提供資料庫開發環境；正式環境請安裝 MariaDB。
+
+    3-1. 自行建立資料庫使用者，並寫入環境檔中
+
+    3-2. 將 `database/web-auth.sql` 匯入資料庫
+
+> 如果你是 Homebrew 使用者，可以執行 `brew install xampp` 進行安裝
+
+4. 安裝 pm2 來運行開發、正式環境
+   
+   ```bash
+   npm i -g pm2
+   ```
+
+> pm2 詳細請參考 [官方文件](https://pm2.keymetrics.io)
+
 <p align="right">
     <a href="#目錄">回目錄</a>
 </p>
 
 ## 運行
+
+```graphql
+.
+└── ecosystem.config.js
+```
+
+使用 `pm2` 管理伺服器運行，設定檔為 `ecosystem.config.js`
+
+- 運行測試環境
+
+    ```bash
+    npm start
+    ```
+
+    > 運行後會直接執行 `pm2 log` 進入 Log 環境，`Ctrl-V` 可以跳出
+
+- 運行正式環境
+
+    ```bash
+    npm run server
+    ```
+
+- 終止伺服器運行
+
+    ```bash
+    npm stop
+    ```
+
+- 進入 Log 環境
+
+    ```bash
+    npm run log
+    ```
 
 <p align="right">
     <a href="#目錄">回目錄</a>
