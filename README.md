@@ -100,6 +100,27 @@ web-auth 以及 web-auth-server 是實作 JWT（Json Web Token）、Google Sign 
 
 ## 網站部署
 
+網站部署使用 AWS 服務，整體架構流程如下：
+
+| Item | AWS |
+|:----:|:---:|
+| DNS | Route 53 |
+| CDN | CloudFront |
+| Client | S3 |
+| <ins>Server</ins> | <ins>EC2</ins> |
+| <ins>DB</ins> | <ins>RDS</ins> |
+
+### EC2
+
+作業系統：CentOS Linux 7 (Core)
+
+伺服器管理：Pm2 (v5.2.0)
+
+### RDS
+
+資料庫：MariaDB (v10.6.10)
+
+
 <p align="right">
     <a href="#目錄">回目錄</a>
 </p>
