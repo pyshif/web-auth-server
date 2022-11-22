@@ -82,11 +82,66 @@ web-auth 以及 web-auth-server 是實作 JWT（Json Web Token）、Google Sign 
 
 ## JWT 管理
 
+```graphql
+.
+├── middlewares
+│   └── jwt
+│       └── auth.js
+└── utils
+    └── jwt
+        ├── secret.js - # 生成密鑰
+        └── token.js - # 生成/驗證 Token
+```
+
+> `middlewares/jwt/auth.js` 驗證 Access/Refresh/Google-ID Token 中間件
+
+### Secret
+
+使用 Node.js 內建 `crypto` 庫，生成 64 位元組密鑰，自行存儲至『環境變數』中 
+
+<details>
+<summary>密鑰生成範例</summary>
+
+```js
+const crypto = require('crypto');
+require('../../config/env');
+
+function generateRandomSecretKey() {
+    return crypto.randomBytes(64).toString('hex');
+}
+
+const secretKey = generateRandomSecretKey();
+console.log('secretKey :>> ', secretKey);
+
+module.exports = { generateRandomSecretKey };
+```
+
+</details>
+
+### Access Token
+
+使用 `jsonwebtoken` 庫生成 Access Token，預設有效時長 15 分鐘
+
+### Refresh Token
+
+使用 `jsonwebtoken` 庫生成 Refresh Token，預設有效時長 90 天
+
+> 當使用 Google 第三方登入時，使用 Google ID Token 取代原有 Refresh Token
+
 <p align="right">
     <a href="#目錄">回目錄</a>
 </p>
 
 ## Google 第三方登入
+
+```graphql
+.
+└── middlewares
+    └── jwt
+        └── auth.js
+```
+
+> `middlewares/jwt/auth.js` 驗證 Access/Refresh/Google-ID Token 中間件
 
 使用者登入流程主要在前端完成，後端負責驗證來自前端的 Google ID Token。
 
@@ -140,6 +195,13 @@ async function verifyGoogleIDToken(token, callback) {
 </p>
 
 ## 系統信發送功能
+
+```graphql
+.
+└── utils
+    └── aws
+        └── ses.js
+```
 
 使用 aws-sdk (v2.1148.0) 庫串接 AWS SES 服務 (api version 2010-12-01)
 
