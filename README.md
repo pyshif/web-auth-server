@@ -94,6 +94,16 @@ web-auth 以及 web-auth-server 是實作 JWT（Json Web Token）、Google Sign 
 
 ## 系統信發送功能
 
+使用 aws-sdk (v2.1148.0) 庫串接 AWS SES 服務 (api version 2010-12-01)
+
+| API | Description |
+|-----|-------------|
+| `POST /auth/forgot` | 發送『重設密碼連結』至使用者信箱 |
+| `POST /auth/google` | 首次登入，發送『歡迎加入信』至使用者信箱 |
+| `POST /auth/signup` | 註冊成功，發送『信箱驗證連結』至使用者信箱 |
+| `POST /auth/user/email` | 更改信箱，發送『信箱驗證連結』至使用者新信箱 |
+| `POST /help/tellme` | 發送『使用者回饋』至客服信箱 |
+
 <p align="right">
     <a href="#目錄">回目錄</a>
 </p>
