@@ -551,8 +551,23 @@ async function verifyGoogleIDToken(token, callback) {
 | DNS | Route 53 |
 | CDN | CloudFront |
 | Client | S3 |
+| Load Balance | (ELB) |
 | <ins>Server</ins> | <ins>EC2</ins> |
 | <ins>DB</ins> | <ins>RDS</ins> |
+
+1. ssh -> server
+
+2. git clone web-auth-server
+
+3. npm i -g pm2
+
+4. npm i 
+
+5. scp .env.prod
+
+6. adjust ecosystem.config.js
+
+7. npm start
 
 ### EC2
 
