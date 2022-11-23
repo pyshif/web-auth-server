@@ -8,41 +8,29 @@ web-auth 以及 web-auth-server 是實作 JWT（Json Web Token）、Google Sign 
 
 1. [安裝](#安裝)
 
-> xampp, mariadb
-
 2. [運行](#運行)
 
 3. [專案結構](#專案結構)
 
     3-1. [環境變數](#環境變數)
 
-    3-2. [設定檔](#設定檔)
+    3-2. [伺服器運行](#伺服器運行)
+
+    3-3. [主要代碼](#主要代碼)
 
 4. [資料庫](#資料庫)
 
-> xampp, mariadb
-
-> mysql, knex, db, table, column
-
 5. [API](#api)
 
-> sign in, sign out , multer, 
+6. [JWT 管理](#jwt-管理)
 
-6. [測試](#測試)
+7. [Google 第三方登入](#google-第三方登入)
 
-7. [JWT 管理](#jwt-管理)
+8. [系統信發送功能](#系統信發送功能)
 
-> secret, jwt
+9. [網站部署](#網站部署)
 
-8. [Google 第三方登入](#google-第三方登入)
-
-9. [系統信發送功能](#系統信發送功能)
-
-10. [網站部署](#網站部署)
-
-> aws > pm2 > linux, rds
-
-11. [使用技術](#使用技術)
+10. [使用技術](#使用技術)
 
 ## 安裝
 
@@ -103,6 +91,8 @@ web-auth 以及 web-auth-server 是實作 JWT（Json Web Token）、Google Sign 
     npm stop
     ```
 
+    > 不使用時，務必執行 `npm stop` 終止伺服器運行
+
 - 進入 Log 環境
 
     ```bash
@@ -115,11 +105,102 @@ web-auth 以及 web-auth-server 是實作 JWT（Json Web Token）、Google Sign 
 
 ## 專案結構
 
+### 環境變數
+
+```graphql
+.
+├── config
+│   └── env.js
+├── .env.dev
+├── .env.prod
+└── .env.example
+```
+
+`.env.dev`、`.env.prod` 需自行依照 `.env.example` 建立
+
+`config/env.js` 根據 `NODE_ENV=development`／`NODE_ENV=production` 來引入 `.env.dev`／`.env.prod` 環境
+
+『環境變數』與『腳本命令』對應關係：
+
+| env | npm |
+|:---:|:---:|
+| `.env.dev` | `npm start` |
+| `.env.prod` | `npm run server` |
+
+
+### 伺服器運行
+
+```graphql
+.
+├── bin
+│   └── www
+└── ecosystem.config.js
+```
+
+`bin/www` 為 Node 伺服器啟動檔案
+
+pm2 設定檔（`ecosystem.config.js`），詳細請參考 [官方文件](https://pm2.keymetrics.io/docs/usage/environment/)
+
+### 主要代碼
+
+```graphql
+.
+├── app.js - # 應用程式入口
+├── middlewares - # 中間件
+│   ├── jwt
+│   │   └── auth.js
+│   └── session.js
+├── public - # 靜態資源
+│   ├── index.html
+│   ├── javascripts
+│   └── stylesheets
+├── routers - # API 路由
+│   ├── auth
+│   │   ├── forgot.js
+│   │   ├── google.js
+│   │   ├── index.js
+│   │   ├── reset.js
+│   │   ├── sign-in.js
+│   │   ├── sign-out.js
+│   │   ├── sign-up.js
+│   │   ├── token.js
+│   │   └── user.js
+│   └── help
+│       ├── index.js
+│       └── tell-me.js
+├── test - # RESTful API 測試
+│   ├── auth
+│   └── help
+└── utils - # 通用工具
+    ├── aws
+    │   └── ses.js
+    ├── db.js
+    ├── jwt
+    │   ├── secret.js
+    │   └── token.js
+    └── knex.js
+```
+
+| file/folder | description |
+|-------------|-------------|
+| `app.js` | 應用程式入口 |
+| `middlewares/` | 中間件 |
+| `public/` | 靜態資源 |
+| `routers/` | 路由 |
+| `test/` | RESTful API 測試 |
+| `utils/` | 通用工具 |
+
 <p align="right">
     <a href="#目錄">回目錄</a>
 </p>
 
 ## 資料庫
+
+```graphql
+.
+└── database
+    └── web-auth.sql
+```
 
 <p align="right">
     <a href="#目錄">回目錄</a>
@@ -127,11 +208,198 @@ web-auth 以及 web-auth-server 是實作 JWT（Json Web Token）、Google Sign 
 
 ## API
 
-<p align="right">
-    <a href="#目錄">回目錄</a>
-</p>
+API 目前共２大類：
 
-## 測試
+- Auth：處理身份驗證、使用者資料
+- Help：處理客服功能
+
+```graphql
+.
+└── routers - # API 路由
+    ├── auth
+    │   ├── forgot.js
+    │   ├── google.js
+    │   ├── index.js
+    │   ├── reset.js
+    │   ├── sign-in.js
+    │   ├── sign-out.js
+    │   ├── sign-up.js
+    │   ├── token.js
+    │   └── user.js
+    └── help
+        ├── index.js
+        └── tell-me.js
+```
+
+### Sign Up
+
+- `POST /auth/signup/`
+
+    新用戶『註冊』
+
+    DB：Read, Create｜users
+
+    成功：200 OK｜發送『Email 地址驗證連結（有效時長 15m）』至使用者信箱
+
+- `GET /auth/signup/:token/`
+
+    說明：新用戶『驗證 Email 地址』
+
+    DB：Read, Update｜users.user_status_id
+
+    成功：304 Redirect『前端登入頁』
+
+### Sign In
+
+- `POST /auth/signin/`
+
+    說明：使用者『登入』
+
+    DB：Read, Update | users.refresh_token
+
+    成功：200 OK | Payload (AccessToken) | Set-Cookie (RefreshToken) 
+
+### Google Sign In
+
+- `POST /auth/google/popup/`
+
+    說明：新用戶/使用者『第三方登入』
+
+    DB：Create, Read, Update | users.refresh_token
+
+    成功：200 OK | Payload (AccessToken) | Set-Cookie (RefreshToken)
+
+### Token
+
+- `GET /auth/token/`
+
+    說明：驗證 Access Token 有效性
+
+    DB：-
+
+    成功：200 OK
+
+- `GET /auth/token/new/`
+
+    說明：驗證 Refresh Token 有效性，『生成新 Access Token』
+
+    DB：Read
+
+    成功：200 OK, Payload (AccessToken)
+
+### Sign Out
+
+- `DELETE /auth/signout/`
+
+    說明：使用者『登出』
+
+    DB：Read, Update｜users.refresh_token
+
+    成功：204 OK | Set-Cookie (Clear RefreshToken)
+
+### Forgot
+
+- `POST /auth/forgot/`
+
+    說明：使用者『忘記密碼』
+
+    DB：Read
+
+    成功：200 OK | 寄送『密碼重設連結（有效時長 15m）』至使用者信箱
+
+- `POST /auth/forgot/:token`
+
+    說明：使用者使用連結『修改密碼』
+
+    DB：Update
+
+    成功：200 OK
+
+### Reset
+
+- `POST /auth/reset/`
+
+    說明：使用者登入狀態下『修改密碼』
+
+    DB：Update | users.password
+
+    成功：200 OK
+
+### User
+
+- `DELETE /auth/user/`
+
+   說明：刪除使用者 
+
+   DB：Delete
+
+   成功：200 OK
+
+- `POST /auth/user/name/`
+
+    說明：更改使用者名稱
+
+    DB：Update
+
+    成功：200 OK
+
+- `POST /auth/user/birthday/`
+
+    說明：更改使用者生日
+
+    DB：Update
+
+    成功：200 OK
+
+- `POST /auth/user/phone/`
+
+    說明：更改使用者手機
+
+    DB：Update
+
+    成功：200 OK
+
+- `POST /auth/user/gender/`
+
+    說明：更改使用者性別
+
+    DB：Update
+
+    成功：200 OK
+
+- `POST /auth/user/avatar/`
+
+    說明：上傳使用者頭像
+
+    DB：Update
+
+    成功：200 OK
+
+- `POST /auth/user/email/`
+
+    說明：申請信箱地址更改
+
+    DB：Read, Update | users.user_status_id
+
+    成功：200 OK | 寄送『Email Address 驗證信（有效時長 15m）』至使用者新信箱
+
+- `POST /auth/user/email/:token/`
+
+    說明：使用者驗證新電子郵箱
+
+    DB：Read, Update
+
+    成功：304 Redirect『前端登入頁』
+
+### Help
+
+- `POST /help/tellme/`
+
+    說明：使用者回饋訊息
+
+    DB：-
+
+    成功：200 OK | 將訊息寄發至客服信箱
 
 <p align="right">
     <a href="#目錄">回目錄</a>
