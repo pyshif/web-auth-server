@@ -24,8 +24,8 @@ app.use(
         origin: [
             'http://color4-me-alb-1534160685.ap-northeast-1.elb.amazonaws.com',
             'https://color4-me-alb-1534160685.ap-northeast-1.elb.amazonaws.com',
-            'http://color4.me',
-            'https://color4.me',
+            'http://web-auth.color4.me',
+            'https://web-auth.color4.me',
             'http://localhost',
             'http://localhost:3000',
         ],
