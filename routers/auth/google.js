@@ -42,7 +42,7 @@ router.post('/popup',
             // OK
             const cookieOptions = {
                 domain: process.env.COOKIE_DOMAIN,
-                secure: process.env.COOKIR_SECURE === 'true',
+                secure: process.env.COOKIE_SECURE === 'true',
                 httpOnly: process.env.COOKIE_HTTPONLY === 'true'
             }
             return res
