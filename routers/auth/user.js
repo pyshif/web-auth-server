@@ -207,7 +207,7 @@ const uploadAvatar = multer({
         }
         cb(null, true);
     },
-    limit: {
+    limits: {
         fileSize: 2 * 1024 * 1024,
     }
 });
