@@ -5,10 +5,10 @@
     "private": true,
     "scripts": {
         "start": "pm2 start ecosystem.config.js",
-        "poststart": "pm2 log --out",
+        "poststart": "pm2 log --out web-auth-server",
         "server": "pm2 start ecosystem.config.js --env production",
         "stop": "pm2 delete web-auth-server",
-        "log": "pm2 log --lines 150"
+        "log": "pm2 log --lines 150 web-auth-server"
     },
     "author": "",
     "license": "ISC",
