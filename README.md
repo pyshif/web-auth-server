@@ -42,15 +42,25 @@ web-auth 以及 web-auth-server 是實作 JWT（Json Web Token）、Google Sign 
 
 2. 依照 `.env.example` 內容，建立 `.env.dev`、`.env.prod` 環境檔於專案目錄底下
 
-3. 安裝 [XAMPP](https://www.apachefriends.org) 提供資料庫開發環境；正式環境請安裝 MariaDB。
+3. （可略）依照下方格式，建立 AWS SES 設定檔 `config.json` 於專案目錄底下，以使用系統信寄發功能
 
-    3-1. 自行建立資料庫使用者，並寫入環境檔中
+    ```json
+    {
+        "accessKeyId": "",
+        "secretAccessKey": "",
+        "region": ""
+    }
+    ```
 
-    3-2. 將 `database/web-auth.sql` 匯入資料庫
+4. 安裝 [XAMPP](https://www.apachefriends.org) 提供資料庫開發環境；正式環境請安裝 MariaDB。
+
+    4-1. 自行建立資料庫使用者，並寫入環境檔中
+
+    4-2. 將 `database/web-auth.sql` 匯入資料庫
 
 > 如果你是 Homebrew 使用者，可以執行 `brew install xampp` 進行安裝
 
-4. 安裝 pm2 來運行開發、正式環境
+5. 安裝 pm2 來運行開發、正式環境
    
    ```bash
    npm i -g pm2
@@ -568,6 +578,22 @@ async function verifyGoogleIDToken(token, callback) {
 6. adjust ecosystem.config.js
 
 7. npm start
+
+### Route 53
+
+1. Set A Type to Attach domain and ELB
+
+### ELB
+
+1. Create Target Group
+
+2. Register Instance to Target Group
+
+3. Request Certifercate in ACM
+
+4. Create Load Balance
+
+5. Set HTTP and HTTPS Forward to specific Target Group
 
 ### EC2
 
