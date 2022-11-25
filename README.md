@@ -6,31 +6,33 @@ web-auth 以及 web-auth-server 是實作 JWT（Json Web Token）、Google Sign 
 
 ## 目錄
 
-1. [安裝](#安裝)
-
-2. [運行](#運行)
-
-3. [專案結構](#專案結構)
-
-    3-1. [環境變數](#環境變數)
-
-    3-2. [伺服器運行](#伺服器運行)
-
-    3-3. [主要代碼](#主要代碼)
-
-4. [資料庫](#資料庫)
-
-5. [API](#api)
-
-6. [JWT 管理](#jwt-管理)
-
-7. [Google 第三方登入](#google-第三方登入)
-
-8. [系統信發送功能](#系統信發送功能)
-
-9. [網站部署](#網站部署)
-
-10. [使用技術](#使用技術)
+- [介紹](#介紹)
+- [目錄](#目錄)
+- [安裝](#安裝)
+- [運行](#運行)
+- [專案結構](#專案結構)
+  - [環境變數](#環境變數)
+  - [伺服器運行](#伺服器運行)
+  - [主要代碼](#主要代碼)
+- [資料庫](#資料庫)
+- [API](#api)
+  - [Sign Up](#sign-up)
+  - [Sign In](#sign-in)
+  - [Google Sign In](#google-sign-in)
+  - [Token](#token)
+  - [Sign Out](#sign-out)
+  - [Forgot](#forgot)
+  - [Reset](#reset)
+  - [User](#user)
+  - [Help](#help)
+- [JWT 管理](#jwt-管理)
+  - [Secret](#secret)
+  - [Access Token](#access-token)
+  - [Refresh Token](#refresh-token)
+- [Google 第三方登入](#google-第三方登入)
+- [系統信發送功能](#系統信發送功能)
+- [網站部署](#網站部署)
+- [使用技術](#使用技術)
 
 ## 安裝
 
@@ -556,55 +558,14 @@ async function verifyGoogleIDToken(token, callback) {
 
 網站部署使用 AWS 服務，整體架構流程如下：
 
-| Item | AWS |
-|:----:|:---:|
-| DNS | Route 53 |
-| CDN | CloudFront |
-| Client | S3 |
-| Load Balance | (ELB) |
-| <ins>Server</ins> | <ins>EC2</ins> |
-| <ins>DB</ins> | <ins>RDS</ins> |
-
-1. ssh -> server
-
-2. git clone web-auth-server
-
-3. npm i -g pm2
-
-4. npm i 
-
-5. scp .env.prod
-
-6. adjust ecosystem.config.js
-
-7. npm start
-
-### Route 53
-
-1. Set A Type to Attach domain and ELB
-
-### ELB
-
-1. Create Target Group
-
-2. Register Instance to Target Group
-
-3. Request Certifercate in ACM
-
-4. Create Load Balance
-
-5. Set HTTP and HTTPS Forward to specific Target Group
-
-### EC2
-
-作業系統：CentOS Linux 7 (Core)
-
-伺服器管理：Pm2 (v5.2.0)
-
-### RDS
-
-資料庫：MariaDB (v10.6.10)
-
+| Item | AWS | Detail |
+|:----:|:---:|:------:|
+| DNS | Route 53 | - |
+| CDN | CloudFront | SSL |
+| Client | S3 | - |
+| Load Balance | (ELB) | SSL |
+| <ins>Server</ins> | <ins>EC2</ins> | CentOS 7 / Pm2 |
+| <ins>DB</ins> | <ins>RDS</ins> | MariaDB v10.6.10 |
 
 <p align="right">
     <a href="#目錄">回目錄</a>
