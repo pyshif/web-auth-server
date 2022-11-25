@@ -8,7 +8,8 @@
         "poststart": "pm2 log --out web-auth-server",
         "server": "pm2 start ecosystem.config.js --env production",
         "stop": "pm2 delete web-auth-server",
-        "log": "pm2 log --lines 150 web-auth-server"
+        "log": "pm2 log --lines 150 web-auth-server",
+        "test": "jest --coverage"
     },
     "author": "",
     "license": "ISC",
@@ -36,5 +37,8 @@
         "pug": "^3.0.2",
         "session-file-store": "^1.5.0",
         "validator": "^13.7.0"
+    },
+    "devDependencies": {
+        "jest": "^29.3.1"
     }
 }
