@@ -25,6 +25,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+
     - name: Create .env file
       uses: SpicyPizza/create-envfile@v1.3.0
       with:
@@ -68,7 +69,10 @@ jobs:
         envkey_COOKIE_SECURE: ${{ secrets.COOKIE_SECURE }}
         envkey_COOKIE_HTTPONLY: ${{ secrets.COOKIE_HTTPONLY }}
 
-    # - name: Create config.json file for AWS SES
+    - name: Create config.json file for AWS SES
+      run: touch ../../config.json
+           echo 123 > ../../config.json
+           cat ../../config.json
     # - name: Install and Run MariaDB
     # - name: Install and Run Pm2
 
