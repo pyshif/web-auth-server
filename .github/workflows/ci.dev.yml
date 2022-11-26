@@ -25,7 +25,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Create .env file
+    - name: Set up Env
       uses: SpicyPizza/create-envfile@v1.3.0
       with:
         directory: ../../
@@ -68,12 +68,51 @@ jobs:
         envkey_COOKIE_SECURE: ${{ secrets.COOKIE_SECURE }}
         envkey_COOKIE_HTTPONLY: ${{ secrets.COOKIE_HTTPONLY }}
 
-    - name: Create config.json file for AWS SES
+    - name: Current Dir
       run: |
-        echo ${{ secrets.AWS_SES_CONFIG }} > ../../config.json
-        cat ../../config.json
+        ls -al
+        pwd
 
-    # - name: Install and Run MariaDB
+    - name: Set up AWS-SES
+      run: |
+        echo ${{ secrets.AWS_SES_CONFIG }} > ./config.json
+
+    # - name: Shutdown MySQL
+    #   run: sudo service mysql stop
+
+    # - name: Set up MariaDB
+    #   uses: getong/mariadb-action@v1.1
+    #   with:
+    #     host port: ${{ secrets.DB_PORT }}
+    #     mysql user: ${{ secrets.DB_USER }}
+    #     mysql password: ${{ secrets.DB_PASSWORD }}
+    - name: Start MySQL
+      run: sudo /etc/init.d/mysql start
+
+    - name: Create user
+      run: mysql -P3306 -h127.0.0.1 -uroot -proot -e "CREATE USER '${{ secrets.DB_USER }}'@'%' IDENTIFIED BY '${{ secrets.DB_PASSWORD }}'"
+
+    - name: Import DB
+      run: mysql -P3306 -h127.0.0.1 -uroot -proot -e "source ./database/web-auth.sql"
+
+    - name: show databases;
+      run: mysql -P3306 -h127.0.0.1 -uroot -proot -e "show databases; help GRANT;"
+
+    - name: Open Auth
+      run: mysql -P3306 -h127.0.0.1 -uroot -proot -e "GRANT ALL ON * TO '${{ secrets.DB_USER }}'@'%'" web-auth
+      # run: mysql -P3306 -h127.0.0.1 -uroot -proot -e "GRANT ALL ON '${{ secrets.DB_NAME }}'.* TO '${{ secrets.DB_USER }}'@'%'"
+
+    - name: Print User
+      run: mysql -P3306 -h127.0.0.1 -uroot -proot -e "SELECT user, host FROM mysql.user"
+
+    - name: Print Grant Help
+      run: mysql -P3306 -h127.0.0.1 -uroot -proot -e "help GRANT"
+
+    # - name: Set up DB
+    #   run: |
+    #     mysql -P3306 -h127.0.0.1 -uroot -proot -e "source ../../database/web-auth.sql"
+      # run: |
+      #   mysql -P${{ secrets.DB_PORT}} -h127.0.0.1 -u${{ secrets.DB_USER }} -p${{ secrets.DB_PASSWORD }} -e "show databases;"
 
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
