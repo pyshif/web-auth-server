@@ -70,7 +70,6 @@ jobs:
 
     - name: Create config.json file for AWS SES
       run: |
-        touch ../../config.json
         echo ${{ secrets.AWS_SES_CONFIG }} > ../../config.json
         cat ../../config.json
 
