@@ -10,72 +10,76 @@ on:
     branches: [ "main" ]
 
 jobs:
-
   build:
-
+    # os
     runs-on: ubuntu-latest
-
+    # container
     strategy:
       matrix:
         node-version: [16.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
+    # env 
     environment: dev
 
     steps:
-    - uses: actions/checkout@v3
+    - name: Clone Repo
+      uses: actions/checkout@v3
 
-    - name: Set up Env
-      uses: SpicyPizza/create-envfile@v1.3.0
-      with:
-        directory: ../../
-        file_name: .env.dev
-        fail_on_empty: true # If set to true, the Action will fail if any env key is empty. Default to false.
+    - name: Create .env.dev
+      run: |
+        echo "
         # Mode
-        envkey_MODE: ${{ secrets.MODE }}
+        MODE= ${{ secrets.MODE }}
         # Server
-        envkey_SERVER_PORT: ${{ secrets.SERVER_PORT }}
-        envkey_SERVER_BASEURL: ${{ secrets.SERVER_BASEURL }}
-        envkey_SERVER_EMAIL_VALIDATION_BASEURL: ${{ secrets.SERVER_EMAIL_VALIDATION_BASEURL }}
-        envkey_SERVER_EMAIL_VALIDATION_FOR_CHANGING_BASEURL: ${{ secrets.SERVER_EMAIL_VALIDATION_FOR_CHANGING_BASEURL }}
+        SERVER_PORT= ${{ secrets.SERVER_PORT }}
+        SERVER_BASEURL= ${{ secrets.SERVER_BASEURL }}
+        SERVER_EMAIL_VALIDATION_BASEURL= ${{ secrets.SERVER_EMAIL_VALIDATION_BASEURL }}
+        SERVER_EMAIL_VALIDATION_FOR_CHANGING_BASEURL= ${{ secrets.SERVER_EMAIL_VALIDATION_FOR_CHANGING_BASEURL }}
         # Database
-        envkey_DB_HOST: ${{ secrets.DB_HOST }}
-        envkey_DB_PORT: ${{ secrets.DB_PORT }}
-        envkey_DB_USER: ${{ secrets.DB_USER }}
-        envkey_DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-        envkey_DB_NAME: ${{ secrets.DB_NAME }}
+        DB_HOST= ${{ secrets.DB_HOST }}
+        DB_PORT= ${{ secrets.DB_PORT }}
+        DB_USER= ${{ secrets.DB_USER }}
+        DB_PASSWORD= ${{ secrets.DB_PASSWORD }}
+        DB_NAME= ${{ secrets.DB_NAME }}
         # Client
-        envkey_CLIENT_BASEURL: ${{ secrets.CLIENT_BASEURL }}
-        envkey_CLIENT_PASSWORD_RESETTING_BASEURL: ${{ secrets.CLIENT_PASSWORD_RESETTING_BASEURL }}
+        CLIENT_BASEURL= ${{ secrets.CLIENT_BASEURL }}
+        CLIENT_PASSWORD_RESETTING_BASEURL= ${{ secrets.CLIENT_PASSWORD_RESETTING_BASEURL }}
         # Session
-        envkey_SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
+        SESSION_SECRET= ${{ secrets.SESSION_SECRET }}
         # JWT
-        envkey_JWT_ACCESS_TOKEN_SECRET: ${{ secrets.JWT_ACCESS_TOKEN_SECRET }}
-        envkey_JWT_REFRESH_TOKEN_SECRET: ${{ secrets.JWT_REFRESH_TOKEN_SECRET }}
-        envkey_JWT_LINK_TOKEN_SECRET: ${{ secrets.JWT_LINK_TOKEN_SECRET }}
-        envkey_JWT_REGULAR_TOKEN_ISS: ${{ secrets.JWT_REGULAR_TOKEN_ISS }}
-        envkey_JWT_GOOGLE_TOKEN_ISS: ${{ secrets.JWT_GOOGLE_TOKEN_ISS }}
-        envkey_JWT_ACCESS_TOKEN_EXPIRES_IN: ${{ secrets.JWT_ACCESS_TOKEN_EXPIRES_IN }}
-        envkey_JWT_REFRESH_TOKEN_EXPIRES_IN: ${{ secrets.JWT_REFRESH_TOKEN_EXPIRES_IN }}
-        envkey_JWT_LINK_TOKEN_EXPIRES_IN: ${{ secrets.JWT_LINK_TOKEN_EXPIRES_IN }}
+        JWT_ACCESS_TOKEN_SECRET= ${{ secrets.JWT_ACCESS_TOKEN_SECRET }}
+        JWT_REFRESH_TOKEN_SECRET= ${{ secrets.JWT_REFRESH_TOKEN_SECRET }}
+        JWT_LINK_TOKEN_SECRET= ${{ secrets.JWT_LINK_TOKEN_SECRET }}
+        JWT_REGULAR_TOKEN_ISS= ${{ secrets.JWT_REGULAR_TOKEN_ISS }}
+        JWT_GOOGLE_TOKEN_ISS= ${{ secrets.JWT_GOOGLE_TOKEN_ISS }}
+        JWT_ACCESS_TOKEN_EXPIRES_IN= ${{ secrets.JWT_ACCESS_TOKEN_EXPIRES_IN }}
+        JWT_REFRESH_TOKEN_EXPIRES_IN= ${{ secrets.JWT_REFRESH_TOKEN_EXPIRES_IN }}
+        JWT_LINK_TOKEN_EXPIRES_IN= ${{ secrets.JWT_LINK_TOKEN_EXPIRES_IN }}
         # Google Sign-In Client-ID
-        envkey_GOOGLE_SIGNIN_CLIENT_ID: ${{ secrets.GOOGLE_SIGNIN_CLIENT_ID }}
+        GOOGLE_SIGNIN_CLIENT_ID= ${{ secrets.GOOGLE_SIGNIN_CLIENT_ID }}
         # AWS SES
-        envkey_AWS_SES_SENDER: ${{ secrets.AWS_SES_SENDER }}
-        envkey_AWS_SES_HELPER: ${{ secrets.AWS_SES_HELPER }}
+        AWS_SES_SENDER= ${{ secrets.AWS_SES_SENDER }}
+        AWS_SES_HELPER= ${{ secrets.AWS_SES_HELPER }}
         # Cookie (secure and httponly set false for Jest)
-        envkey_COOKIE_DOMAIN: ${{ secrets.COOKIE_DOMAIN }}
-        envkey_COOKIE_SECURE: ${{ secrets.COOKIE_SECURE }}
-        envkey_COOKIE_HTTPONLY: ${{ secrets.COOKIE_HTTPONLY }}
-
-    - name: Current Dir
-      run: |
+        COOKIE_DOMAIN= ${{ secrets.COOKIE_DOMAIN }}
+        COOKIE_SECURE= ${{ secrets.COOKIE_SECURE }}
+        COOKIE_HTTPONLY= ${{ secrets.COOKIE_HTTPONLY }}" > .env.dev
         ls -al
-        pwd
+        cat .env.dev
 
-    - name: Set up AWS-SES
+    - name: Create config.json (aws-ses)
       run: |
-        echo ${{ secrets.AWS_SES_CONFIG }} > ./config.json
+        echo "
+        {
+          \"accessKeyId\": \"${{ secrets.AWS_SES_ACCESS_KEY_ID }}\",
+          \"secretAccessKey\": \"${{ secrets.AWS_SES_SECRET_ACCESS_KEY }}\",
+          \"region\": \"${{ secrets.AWS_SES_REGION }}\"
+        }" > config.json
+        ls -al
+        cat config.json
+
+    - name: Active MySQL Service
+      run: |
+        sudo /etc/init.d/mysql start --port=${{ secrets.DB_PORT }}
 
     # - name: Shutdown MySQL
     #   run: sudo service mysql stop
@@ -86,27 +90,28 @@ jobs:
     #     host port: ${{ secrets.DB_PORT }}
     #     mysql user: ${{ secrets.DB_USER }}
     #     mysql password: ${{ secrets.DB_PASSWORD }}
-    - name: Start MySQL
-      run: sudo /etc/init.d/mysql start
 
-    - name: Create user
-      run: mysql -P3306 -h127.0.0.1 -uroot -proot -e "CREATE USER '${{ secrets.DB_USER }}'@'%' IDENTIFIED BY '${{ secrets.DB_PASSWORD }}'"
+    # - name: Start MySQL
+    #   run: sudo /etc/init.d/mysql start
 
-    - name: Import DB
-      run: mysql -P3306 -h127.0.0.1 -uroot -proot -e "source ./database/web-auth.sql"
+    # - name: Create user
+    #   run: mysql -P3306 -h127.0.0.1 -uroot -proot -e "CREATE USER '${{ secrets.DB_USER }}'@'%' IDENTIFIED BY '${{ secrets.DB_PASSWORD }}'"
 
-    - name: show databases;
-      run: mysql -P3306 -h127.0.0.1 -uroot -proot -e "show databases; help GRANT;"
+    # - name: Import DB
+    #   run: mysql -P3306 -h127.0.0.1 -uroot -proot -e "source ./database/web-auth.sql"
 
-    - name: Open Auth
-      run: mysql -P3306 -h127.0.0.1 -uroot -proot -e "GRANT ALL ON * TO '${{ secrets.DB_USER }}'@'%'" web-auth
-      # run: mysql -P3306 -h127.0.0.1 -uroot -proot -e "GRANT ALL ON '${{ secrets.DB_NAME }}'.* TO '${{ secrets.DB_USER }}'@'%'"
+    # - name: show databases;
+    #   run: mysql -P3306 -h127.0.0.1 -uroot -proot -e "show databases; help GRANT;"
 
-    - name: Print User
-      run: mysql -P3306 -h127.0.0.1 -uroot -proot -e "SELECT user, host FROM mysql.user"
+    # - name: Open Auth
+    #   run: mysql -P3306 -h127.0.0.1 -uroot -proot -e "GRANT ALL ON * TO '${{ secrets.DB_USER }}'@'%'" web-auth
+    #   # run: mysql -P3306 -h127.0.0.1 -uroot -proot -e "GRANT ALL ON '${{ secrets.DB_NAME }}'.* TO '${{ secrets.DB_USER }}'@'%'"
 
-    - name: Print Grant Help
-      run: mysql -P3306 -h127.0.0.1 -uroot -proot -e "help GRANT"
+    # - name: Print User
+    #   run: mysql -P3306 -h127.0.0.1 -uroot -proot -e "SELECT user, host FROM mysql.user"
+
+    # - name: Print Grant Help
+    #   run: mysql -P3306 -h127.0.0.1 -uroot -proot -e "help GRANT"
 
     # - name: Set up DB
     #   run: |
