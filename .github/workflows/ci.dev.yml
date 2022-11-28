@@ -79,17 +79,17 @@ jobs:
 
     - name: Active MySQL Service
       run: |
+        # active
         sudo /etc/init.d/mysql start --port=${{ secrets.DB_PORT }}
+        # import db
+        mysql -P${{ secrets.DB_PORT }} -h${{ secrets.DB_HOST }} -uroot -proot -e "source database/web-auth.sql"
+        mysql -P${{ secrets.DB_PORT }} -h${{ secrets.DB_HOST }} -uroot -proot -e "SHOW databases"
+        # create user
+        mysql -P${{ secrets.DB_PORT }} -h${{ secrets.DB_HOST }} -uroot -proot -e "CREATE USER '${{ secrets.DB_USER }}'@'${{ secrets.DB_HOST }}' IDENTIFIED BY '${{ secrets.DB_PASSWORD }}'"
+        mysql -P${{ secrets.DB_PORT }} -h${{ secrets.DB_HOST }} -uroot -proot -e "GRANT ALL ON * TO '${{ secrets.DB_USER}}'@'${{ secrets.DB_HOST}}'" ${{ secrets.DB_NAME }}
+        mysql -P${{ secrets.DB_PORT }} -h${{ secrets.DB_HOST }} -uroot -proot -e "SELECT user, host FROM mysql.user"
+        mysql -P${{ secrets.DB_PORT }} -h${{ secrets.DB_HOST }} -uroot -proot -e "SHOW GRANTS FOR '${{ secrets.DB_USER }}'@'${{ secrets.DB_HOST }}'"
 
-    # - name: Shutdown MySQL
-    #   run: sudo service mysql stop
-
-    # - name: Set up MariaDB
-    #   uses: getong/mariadb-action@v1.1
-    #   with:
-    #     host port: ${{ secrets.DB_PORT }}
-    #     mysql user: ${{ secrets.DB_USER }}
-    #     mysql password: ${{ secrets.DB_PASSWORD }}
 
     # - name: Start MySQL
     #   run: sudo /etc/init.d/mysql start
