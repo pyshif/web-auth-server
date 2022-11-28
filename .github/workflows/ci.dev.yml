@@ -21,116 +21,95 @@ jobs:
     environment: dev
 
     steps:
-    - name: Clone Repo
-      uses: actions/checkout@v3
+      - name: Clone Repo
+        uses: actions/checkout@v3
 
-    - name: Create .env.dev
-      run: |
-        echo "
-        # Mode
-        MODE= ${{ secrets.MODE }}
-        # Server
-        SERVER_PORT= ${{ secrets.SERVER_PORT }}
-        SERVER_BASEURL= ${{ secrets.SERVER_BASEURL }}
-        SERVER_EMAIL_VALIDATION_BASEURL= ${{ secrets.SERVER_EMAIL_VALIDATION_BASEURL }}
-        SERVER_EMAIL_VALIDATION_FOR_CHANGING_BASEURL= ${{ secrets.SERVER_EMAIL_VALIDATION_FOR_CHANGING_BASEURL }}
-        # Database
-        DB_HOST= ${{ secrets.DB_HOST }}
-        DB_PORT= ${{ secrets.DB_PORT }}
-        DB_USER= ${{ secrets.DB_USER }}
-        DB_PASSWORD= ${{ secrets.DB_PASSWORD }}
-        DB_NAME= ${{ secrets.DB_NAME }}
-        # Client
-        CLIENT_BASEURL= ${{ secrets.CLIENT_BASEURL }}
-        CLIENT_PASSWORD_RESETTING_BASEURL= ${{ secrets.CLIENT_PASSWORD_RESETTING_BASEURL }}
-        # Session
-        SESSION_SECRET= ${{ secrets.SESSION_SECRET }}
-        # JWT
-        JWT_ACCESS_TOKEN_SECRET= ${{ secrets.JWT_ACCESS_TOKEN_SECRET }}
-        JWT_REFRESH_TOKEN_SECRET= ${{ secrets.JWT_REFRESH_TOKEN_SECRET }}
-        JWT_LINK_TOKEN_SECRET= ${{ secrets.JWT_LINK_TOKEN_SECRET }}
-        JWT_REGULAR_TOKEN_ISS= ${{ secrets.JWT_REGULAR_TOKEN_ISS }}
-        JWT_GOOGLE_TOKEN_ISS= ${{ secrets.JWT_GOOGLE_TOKEN_ISS }}
-        JWT_ACCESS_TOKEN_EXPIRES_IN= ${{ secrets.JWT_ACCESS_TOKEN_EXPIRES_IN }}
-        JWT_REFRESH_TOKEN_EXPIRES_IN= ${{ secrets.JWT_REFRESH_TOKEN_EXPIRES_IN }}
-        JWT_LINK_TOKEN_EXPIRES_IN= ${{ secrets.JWT_LINK_TOKEN_EXPIRES_IN }}
-        # Google Sign-In Client-ID
-        GOOGLE_SIGNIN_CLIENT_ID= ${{ secrets.GOOGLE_SIGNIN_CLIENT_ID }}
-        # AWS SES
-        AWS_SES_SENDER= ${{ secrets.AWS_SES_SENDER }}
-        AWS_SES_HELPER= ${{ secrets.AWS_SES_HELPER }}
-        # Cookie (secure and httponly set false for Jest)
-        COOKIE_DOMAIN= ${{ secrets.COOKIE_DOMAIN }}
-        COOKIE_SECURE= ${{ secrets.COOKIE_SECURE }}
-        COOKIE_HTTPONLY= ${{ secrets.COOKIE_HTTPONLY }}" > .env.dev
-        ls -al
-        cat .env.dev
+      - name: Create .env.dev
+        run: |
+          echo "
+          # Mode
+          MODE= ${{ secrets.MODE }}
+          # Server
+          SERVER_PORT= ${{ secrets.SERVER_PORT }}
+          SERVER_BASEURL= ${{ secrets.SERVER_BASEURL }}
+          SERVER_EMAIL_VALIDATION_BASEURL= ${{ secrets.SERVER_EMAIL_VALIDATION_BASEURL }}
+          SERVER_EMAIL_VALIDATION_FOR_CHANGING_BASEURL= ${{ secrets.SERVER_EMAIL_VALIDATION_FOR_CHANGING_BASEURL }}
+          # Database
+          DB_HOST= ${{ secrets.DB_HOST }}
+          DB_PORT= ${{ secrets.DB_PORT }}
+          DB_USER= ${{ secrets.DB_USER }}
+          DB_PASSWORD= ${{ secrets.DB_PASSWORD }}
+          DB_NAME= ${{ secrets.DB_NAME }}
+          # Client
+          CLIENT_BASEURL= ${{ secrets.CLIENT_BASEURL }}
+          CLIENT_PASSWORD_RESETTING_BASEURL= ${{ secrets.CLIENT_PASSWORD_RESETTING_BASEURL }}
+          # Session
+          SESSION_SECRET= ${{ secrets.SESSION_SECRET }}
+          # JWT
+          JWT_ACCESS_TOKEN_SECRET= ${{ secrets.JWT_ACCESS_TOKEN_SECRET }}
+          JWT_REFRESH_TOKEN_SECRET= ${{ secrets.JWT_REFRESH_TOKEN_SECRET }}
+          JWT_LINK_TOKEN_SECRET= ${{ secrets.JWT_LINK_TOKEN_SECRET }}
+          JWT_REGULAR_TOKEN_ISS= ${{ secrets.JWT_REGULAR_TOKEN_ISS }}
+          JWT_GOOGLE_TOKEN_ISS= ${{ secrets.JWT_GOOGLE_TOKEN_ISS }}
+          JWT_ACCESS_TOKEN_EXPIRES_IN= ${{ secrets.JWT_ACCESS_TOKEN_EXPIRES_IN }}
+          JWT_REFRESH_TOKEN_EXPIRES_IN= ${{ secrets.JWT_REFRESH_TOKEN_EXPIRES_IN }}
+          JWT_LINK_TOKEN_EXPIRES_IN= ${{ secrets.JWT_LINK_TOKEN_EXPIRES_IN }}
+          # Google Sign-In Client-ID
+          GOOGLE_SIGNIN_CLIENT_ID= ${{ secrets.GOOGLE_SIGNIN_CLIENT_ID }}
+          # AWS SES
+          AWS_SES_SENDER= ${{ secrets.AWS_SES_SENDER }}
+          AWS_SES_HELPER= ${{ secrets.AWS_SES_HELPER }}
+          # Cookie (secure and httponly set false for Jest)
+          COOKIE_DOMAIN= ${{ secrets.COOKIE_DOMAIN }}
+          COOKIE_SECURE= ${{ secrets.COOKIE_SECURE }}
+          COOKIE_HTTPONLY= ${{ secrets.COOKIE_HTTPONLY }}" > .env.dev
+          ls -al
+          cat .env.dev
 
-    - name: Create config.json (aws-ses)
-      run: |
-        echo "
-        {
-          \"accessKeyId\": \"${{ secrets.AWS_SES_ACCESS_KEY_ID }}\",
-          \"secretAccessKey\": \"${{ secrets.AWS_SES_SECRET_ACCESS_KEY }}\",
-          \"region\": \"${{ secrets.AWS_SES_REGION }}\"
-        }" > config.json
-        ls -al
-        cat config.json
+      - name: Create config.json (aws-ses)
+        run: |
+          echo "
+          {
+            \"accessKeyId\": \"${{ secrets.AWS_SES_ACCESS_KEY_ID }}\",
+            \"secretAccessKey\": \"${{ secrets.AWS_SES_SECRET_ACCESS_KEY }}\",
+            \"region\": \"${{ secrets.AWS_SES_REGION }}\"
+          }" > config.json
+          ls -al
+          cat config.json
 
-    - name: Active MySQL Service
-      run: |
-        # active
-        sudo /etc/init.d/mysql start --port=${{ secrets.DB_PORT }}
-        # import db
-        mysql -P${{ secrets.DB_PORT }} -h${{ secrets.DB_HOST }} -uroot -proot -e "source database/web-auth.sql"
-        mysql -P${{ secrets.DB_PORT }} -h${{ secrets.DB_HOST }} -uroot -proot -e "SHOW databases"
-        # create user
-        mysql -P${{ secrets.DB_PORT }} -h${{ secrets.DB_HOST }} -uroot -proot -e "CREATE USER '${{ secrets.DB_USER }}'@'${{ secrets.DB_HOST }}' IDENTIFIED BY '${{ secrets.DB_PASSWORD }}'"
-        mysql -P${{ secrets.DB_PORT }} -h${{ secrets.DB_HOST }} -uroot -proot -e "GRANT ALL ON * TO '${{ secrets.DB_USER}}'@'${{ secrets.DB_HOST}}'" ${{ secrets.DB_NAME }}
-        mysql -P${{ secrets.DB_PORT }} -h${{ secrets.DB_HOST }} -uroot -proot -e "SELECT user, host FROM mysql.user"
-        mysql -P${{ secrets.DB_PORT }} -h${{ secrets.DB_HOST }} -uroot -proot -e "SHOW GRANTS FOR '${{ secrets.DB_USER }}'@'${{ secrets.DB_HOST }}'"
+      - name: Active MySQL Service
+        run: |
+          # active
+          sudo /etc/init.d/mysql start --port=${{ secrets.DB_PORT }}
+          # import db
+          mysql -P${{ secrets.DB_PORT }} -h${{ secrets.DB_HOST }} -uroot -proot -e "source database/web-auth.sql"
+          mysql -P${{ secrets.DB_PORT }} -h${{ secrets.DB_HOST }} -uroot -proot -e "SHOW databases"
+          # create user
+          mysql -P${{ secrets.DB_PORT }} -h${{ secrets.DB_HOST }} -uroot -proot -e "CREATE USER '${{ secrets.DB_USER }}'@'${{ secrets.DB_HOST }}' IDENTIFIED BY '${{ secrets.DB_PASSWORD }}'"
+          mysql -P${{ secrets.DB_PORT }} -h${{ secrets.DB_HOST }} -uroot -proot -e "GRANT ALL ON * TO '${{ secrets.DB_USER}}'@'${{ secrets.DB_HOST}}'" ${{ secrets.DB_NAME }}
+          mysql -P${{ secrets.DB_PORT }} -h${{ secrets.DB_HOST }} -uroot -proot -e "SELECT user, host FROM mysql.user"
+          mysql -P${{ secrets.DB_PORT }} -h${{ secrets.DB_HOST }} -uroot -proot -e "SHOW GRANTS FOR '${{ secrets.DB_USER }}'@'${{ secrets.DB_HOST }}'"
 
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
 
-    # - name: Start MySQL
-    #   run: sudo /etc/init.d/mysql start
+      - name: Install npm packages
+        run: |
+          npm i -g pm2
+          npm ci
 
-    # - name: Create user
-    #   run: mysql -P3306 -h127.0.0.1 -uroot -proot -e "CREATE USER '${{ secrets.DB_USER }}'@'%' IDENTIFIED BY '${{ secrets.DB_PASSWORD }}'"
+      - name: Active API Server
+        run: |
+          npm start
 
-    # - name: Import DB
-    #   run: mysql -P3306 -h127.0.0.1 -uroot -proot -e "source ./database/web-auth.sql"
+      - name: Run Test 
+        run: |
+          npm test
 
-    # - name: show databases;
-    #   run: mysql -P3306 -h127.0.0.1 -uroot -proot -e "show databases; help GRANT;"
-
-    # - name: Open Auth
-    #   run: mysql -P3306 -h127.0.0.1 -uroot -proot -e "GRANT ALL ON * TO '${{ secrets.DB_USER }}'@'%'" web-auth
-    #   # run: mysql -P3306 -h127.0.0.1 -uroot -proot -e "GRANT ALL ON '${{ secrets.DB_NAME }}'.* TO '${{ secrets.DB_USER }}'@'%'"
-
-    # - name: Print User
-    #   run: mysql -P3306 -h127.0.0.1 -uroot -proot -e "SELECT user, host FROM mysql.user"
-
-    # - name: Print Grant Help
-    #   run: mysql -P3306 -h127.0.0.1 -uroot -proot -e "help GRANT"
-
-    # - name: Set up DB
-    #   run: |
-    #     mysql -P3306 -h127.0.0.1 -uroot -proot -e "source ../../database/web-auth.sql"
-      # run: |
-      #   mysql -P${{ secrets.DB_PORT}} -h127.0.0.1 -u${{ secrets.DB_USER }} -p${{ secrets.DB_PASSWORD }} -e "show databases;"
-
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    # Install Server and Packages
-    - run: npm i -g pm2
-    - run: npm ci
-    # Server Start
-    # - run: npm start
-    # - run: npm run build --if-present
-    - run: npm test
-
-    # Server Shutdown
-    # - run: npm stop
+      - name: Shutdown
+        run: |
+          npm stop
+          mysql stop

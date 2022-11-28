@@ -1,8 +1,32 @@
+require('dotenv').config({ path: '.env.dev' });
+const knex = require('../../../utils/knex');
 
 describe('ci.dev.yml testing', () => {
-    it('should be Liz.', () => {
-        const name = 'Liz'
-        expect(name).toBe('Liz');
+    it('should be Liz.', async () => {
+
+        try {
+            const insert = await knex('users')
+                .insert({
+                    name: '123',
+                    email: '123@email.com',
+                    password: '123',
+                    password: '123',
+                    user_status_id: 1
+                });
+
+            const rows = await knex.select()
+                .from('users');
+            if (rows.length < 1) {
+                throw new Error;
+            }
+            console.log('rows :>> ', rows);
+
+            const name = 'Liz'
+            expect(name).toBe('Liz');
+        } catch (error) {
+            console.log('error.message :>> ', error.message);
+        }
+
     });
 });
 
