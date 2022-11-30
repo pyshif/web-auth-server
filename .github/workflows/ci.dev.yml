@@ -79,7 +79,7 @@ jobs:
           cat config.json
 
       - name: Active MySQL Service
-        uses: pyshif/ci-mysql@v1.1
+        uses: pyshif/ci-mysql@v1.2
         with:
           port: ${{ secrets.DB_PORT }}
           host: ${{ secrets.DB_HOST }}
