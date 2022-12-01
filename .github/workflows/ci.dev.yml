@@ -109,12 +109,12 @@ jobs:
 
       - name: Install npm packages
         run: |
-          npm i -g pm2
           npm ci
+      #   npm i -g pm2
 
-      - name: Active API Server
-        run: |
-          npm start
+      # - name: Active API Server
+      #   run: |
+      #     npm start
 
       - name: Run Test 
         run: |
