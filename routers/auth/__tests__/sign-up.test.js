@@ -1,50 +1,115 @@
-require('dotenv').config({ path: '.env.dev' });
-const knex = require('../../../utils/knex');
-const axios = require('axios');
+
+let server;
+
+beforeAll(() => {
+    // mock process.env
+    jest.resetModules();
+    process.env.NODE_ENV = 'development';
+    // mock aws ses
+    jest.mock('../../../utils/aws/ses');
+
+    // start server
+    const app = require('../../../app');
+    server = app.listen(process.env.SERVER_PORT, () => {
+        console.log(`Server running at port: ${process.env.SERVER_PORT}`);
+    });
+
+});
+
+afterAll(() => {
+    // shutdown server
+    server.close();
+});
 
 describe('test /auth/signup API', () => {
-    it('should be existed user that name is test-1', async () => {
+
+    const axios = require('axios');
+
+    let apiSignUp;
+    let validationLink;
+
+    beforeEach(() => {
+        apiSignUp = axios.create({
+            baseURL: process.env.SERVER_BASEURL + 'auth/signup/'
+        });
+    });
+
+
+    it('GET /auth/signup/health :>> 200 OK', async () => {
+        let response;
+        try {
+            response = await apiSignUp({
+                method: 'GET',
+                url: '/health'
+            })
+            // console.log('res.status :>> ', res.status);
+        } catch (error) {
+            console.log('error :>> ', error);
+        }
+        expect(response.status).toBe(200);
+    });
+
+    // !!! if you testing on local, please ensure database has runned !!!
+    it('POST /auth/signup/ :>> 200 OK, and recevie email address vaildation link', async () => {
+        const { sendValidationEmail } = require('../../../utils/aws/ses');
+        let response;
 
         try {
-            const instance = axios.create({
-                baseURL: process.env.SERVER_BASEURL
-            });
-
             const data = {
-                name: 'test-1',
-                email: 'test-1@mail.com',
+                name: 'tester-1',
+                email: 'tester-1@mail.com',
                 password: 'Cc123456@',
                 confirmPassword: 'Cc123456@',
-                passwordHint: 'CCDay is nice day'
-            };
-
-            const response = await instance({
+                passwordHint: 'today is a nice day'
+            }
+            response = await apiSignUp({
                 method: 'POST',
-                url: '/auth/signup',
                 data
             });
 
-            console.log('response :>> ', response);
-
         } catch (error) {
-            console.log('axios error :>> ', error);
+            console.log('error :>> ', error.message);
         }
 
-        let rows;
+        // get validation-link for next testing
+        validationLink = sendValidationEmail.mock.calls[0][1];
+        // console.log('sendValidationEmail.mock.calls[0] :>> ', sendValidationEmail.mock.calls[0]);
+
+        expect(sendValidationEmail).toHaveBeenCalledTimes(1);
+        expect(response.status).toBe(200);
+    });
+
+    it('GET /auth/signup/:token :>> 302 OK', async () => {
+        let response;
+        try {
+            response = await axios({
+                method: 'GET',
+                url: validationLink,
+                maxRedirects: 0
+            });
+            // console.log('response :>> ', response);
+
+        } catch (error) {
+            // console.log('error :>> ', error);
+            response = error.response;
+        }
+
+        expect(response.status).toBe(302);
+    });
+
+    it('Clear DB web-auth.users', async () => {
+        const knex = require('../../../utils/knex');
 
         try {
-            rows = await knex.select()
-                .from('users')
-                .where('email', 'test-1@mail.com');
+            const del = await knex('users')
+                .del();
 
-            if (rows.length < 1) {
-                throw new Error('No user')
-            }
+            const alter = await knex.schema.raw("ALTER TABLE users AUTO_INCREMENT = 1");
+
+            console.log('del :>> ', del);
+            console.log('alter :>> ', alter);
         } catch (error) {
-            console.log('sql error :>> ', error);
+            console.log('error :>> ', error);
         }
-
-        const user = rows[0];
-        expect(user.email).toBe('test-1@mail.com');
     });
 });

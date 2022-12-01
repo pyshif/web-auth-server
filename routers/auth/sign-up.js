@@ -7,6 +7,10 @@ const knex = require('../../utils/knex');
 const { sendValidationEmail } = require('../../utils/aws/ses');
 const { generateLinkTokenCallback, verifyLinkToken } = require('../../utils/jwt/token');
 
+router.get('/health', async (req, res) => {
+    return res.sendStatus(200);
+});
+
 router.post('/', validateSignUpPayload, async (req, res) => {
     const { user } = req; // pass from prev middleware
 
