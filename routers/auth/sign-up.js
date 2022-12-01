@@ -54,7 +54,6 @@ router.post('/', validateSignUpPayload, async (req, res) => {
             return res.status(400).end('sending validation email is failed!');
         }
         // OK
-        if (process.env.MODE === "dev") return res.status(200).json({ linkToken: token });
         return res.status(200).end();
     });
 });
@@ -95,7 +94,6 @@ router.get('/:token', async function (req, res) {
         if (update < 1) {
             throw new Error('validating email address is failed!');
         }
-        if (process.env.MODE === 'dev') return res.status(200).end('successfully validate email address!');
         return res.redirect(process.env.CLIENT_BASEURL + 'auth/signin/');
     } catch (error) {
         return res.status(403).end(error.message);
