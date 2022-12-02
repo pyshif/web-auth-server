@@ -63,7 +63,7 @@ jobs:
           # Cookie (secure and httponly set false for Jest)
           COOKIE_DOMAIN= ${{ secrets.COOKIE_DOMAIN }}
           COOKIE_SECURE= ${{ secrets.COOKIE_SECURE }}
-          COOKIE_HTTPONLY= ${{ secrets.COOKIE_HTTPONLY }}" > .env.dev
+          COOKIE_HTTPONLY= ${{ secrets.COOKIE_HTTPONLY }}
           # JEST
           JEST_USER_NAME= ${{ secrets.JEST_USER_NAME }}
           JEST_USER_EMAIL= ${{ secrets.JEST_USER_EMAIL }}
@@ -74,7 +74,7 @@ jobs:
           JEST_USER_NEW_PASSWORD= ${{ secrets.JEST_USER_NEW_PASSWORD }}
           JEST_USER_NEW_GENDER= ${{ secrets.JEST_USER_NEW_GENDER }}
           JEST_USER_NEW_PHONE= ${{ secrets.JEST_USER_NEW_PHONE }}
-          JEST_USER_NEW_BIRTHDAY= ${{ secrets.JEST_USER_NEW_BIRTHDAY }}
+          JEST_USER_NEW_BIRTHDAY= ${{ secrets.JEST_USER_NEW_BIRTHDAY }}" > .env.dev
           ls -al
           cat .env.dev
 
