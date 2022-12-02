@@ -39,8 +39,8 @@ describe('test /auth/signup API', () => {
 
             expect(response.status).toBe(200);
         } catch (error) {
+            // console.log('error :>> ', error);
             expect(error).toBeUndefined();
-            console.log('error :>> ', error);
         }
     });
 
@@ -68,7 +68,7 @@ describe('test /auth/signup API', () => {
             mockMeta.validationLink = mockSendValidationEmail.mock.calls[0][1];
             // console.log('mockSendValidationEmail.mock.calls[0] :>> ', mockSendValidationEmail.mock.calls[0]);
         } catch (error) {
-            console.log('error :>> ', error);
+            // console.log('error :>> ', error);
             expect(error).toBeUndefined();
         }
     });
@@ -81,7 +81,7 @@ describe('test /auth/signup API', () => {
                 maxRedirects: 0 // make redirect info into error.response
             });
         } catch (error) {
-            console.log('error :>> ', error);
+            // console.log('error :>> ', error);
             const { response } = error;
             expect(response.status).toBe(302);
         }
@@ -127,12 +127,87 @@ describe('test /auth/signin API', () => {
 
             expect(response.status).toBe(200);
             expect(cookie).toMatch(/^C4RFT.*$/);
+            expect(response.data).toHaveProperty('accessToken');
 
             mockMeta.refreshToken = cookie.split('; ')[0].split('=')[1];
             mockMeta.accessToken = response.data.accessToken;
             // console.log('mockMeta :>> ', mockMeta);
         } catch (error) {
-            console.log('error :>> ', error);
+            // console.log('error :>> ', error);
+            expect(error).toBeUndefined();
+        }
+    });
+});
+
+describe('test /auth/token API', () => {
+    // variable
+    let server;
+    let mockCookies;
+    let mockSay;
+    // init
+    beforeAll(() => {
+        jest.resetModules();
+        // mock
+        process.env.NODE_ENV = 'development';
+        // !!! Express Middleware only loading once on initialize !!!
+        // !!! So, cookie-parser must mock before server start !!!
+        mockCookies = require('cookie-parser');
+        jest.mock('cookie-parser', () => {
+            return jest.fn().mockReturnValue((req, res, next) => {
+                const { cookies } = req;
+                req.cookies = {
+                    ...cookies,
+                    C4RFT: mockMeta.refreshToken
+                };
+                next();
+            });
+        });
+        // start server
+        const app = require('../../../app');
+        const port = process.env.SERVER_PORT;
+        server = app.listen(port, () => {
+            console.log(`Server running at port: ${port}`);
+        });
+    });
+    // deinit
+    afterAll(() => {
+        server.close();
+    });
+    // test
+    it('GET /auth/token :>> 200 OK', async () => {
+        try {
+            const response = await axios({
+                method: 'GET',
+                baseURL: process.env.SERVER_BASEURL + 'auth/token/',
+                url: '/',
+                withCredentials: true,
+                headers: {
+                    Authorization: `Bearer ${mockMeta.accessToken}`,
+                }
+            });
+
+            expect(response.status).toBe(200);
+        } catch (error) {
+            // console.log('error :>> ', error);
+            expect(error).toBeUndefined();
+        }
+    });
+
+    it('GET /auth/token/new :>> 200 OK, and receive new access token', async () => {
+        try {
+            const response = await axios({
+                method: 'GET',
+                baseURL: process.env.SERVER_BASEURL + 'auth/token/',
+                url: '/new',
+                withCredentials: true,
+            });
+
+            expect(response.status).toBe(200);
+            expect(response.data).toHaveProperty('accessToken');
+
+            mockMeta.accessToken = response.data.accessToken;
+        } catch (error) {
+            // console.log('error :>> ', error);
             expect(error).toBeUndefined();
         }
     });
