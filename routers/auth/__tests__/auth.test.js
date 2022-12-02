@@ -3,6 +3,7 @@ const axios = require('axios');
 // store info between testings
 const mockMeta = {
     validationLink: '',
+    resetPasswordUrl: '',
     refreshToken: '',
     accessToken: '',
 }
@@ -143,7 +144,6 @@ describe('test /auth/token API', () => {
     // variable
     let server;
     let mockCookies;
-    let mockSay;
     // init
     beforeAll(() => {
         jest.resetModules();
@@ -206,6 +206,78 @@ describe('test /auth/token API', () => {
             expect(response.data).toHaveProperty('accessToken');
 
             mockMeta.accessToken = response.data.accessToken;
+        } catch (error) {
+            // console.log('error :>> ', error);
+            expect(error).toBeUndefined();
+        }
+    });
+});
+
+describe('test /auth/forgot API', () => {
+    // variable
+    let server;
+    let mockSendResetPasswordLinkEmail;
+    // init
+    beforeAll(() => {
+        jest.resetModules();
+        // mock
+        process.env.NODE_ENV = 'development';
+        mockSendResetPasswordLinkEmail = require('../../../utils/aws/ses').sendResetPasswordLinkEmail;
+        jest.mock('../../../utils/aws/ses');
+        // start server
+        const app = require('../../../app');
+        const port = process.env.SERVER_PORT;
+        server = app.listen(port, () => {
+            console.log(`Server running at port: ${port}`);
+        });
+    });
+    // deinit
+    afterAll(() => {
+        server.close();
+    });
+    // test
+    it('POST /auth/forgot API :>> 200 OK, and receive reset password link', async () => {
+        try {
+            const data = {
+                email: process.env.JEST_USER_EMAIL,
+                passwordHint: process.env.JEST_USER_PASSWORD_HINT,
+            };
+
+            const response = await axios({
+                method: 'POST',
+                baseURL: process.env.SERVER_BASEURL + 'auth/forgot/',
+                url: '/',
+                data
+            });
+
+            expect(response.status).toBe(200);
+            expect(mockSendResetPasswordLinkEmail).toHaveBeenCalled();
+
+            // receive reset-link (client side page), so we need to extract query param(token)
+            mockMeta.resetPasswordUrl = mockSendResetPasswordLinkEmail.mock.calls[0][1].split('/').pop();
+            // console.log('mockSendResetPasswordLinkEmail.mock.calls :>> ', mockSendResetPasswordLinkEmail.mock.calls);
+            // console.log('mockMeta :>> ', mockMeta);
+        } catch (error) {
+            // console.log('error :>> ', error);
+            expect(error).toBeUndefined();
+        }
+    });
+
+    it('POST /auth/forgot/:token API :>> 200 OK', async () => {
+        try {
+            const data = {
+                newPassword: process.env.JEST_USER_NEW_PASSWORD,
+                confirmPassword: process.env.JEST_USER_NEW_PASSWORD,
+            };
+
+            const response = await axios({
+                method: 'POST',
+                baseURL: process.env.SERVER_BASEURL + 'auth/forgot/',
+                url: mockMeta.resetPasswordUrl,
+                data,
+            });
+
+            expect(response.status).toBe(200);
         } catch (error) {
             // console.log('error :>> ', error);
             expect(error).toBeUndefined();
