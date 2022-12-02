@@ -4,6 +4,7 @@ const axios = require('axios');
 const mockMeta = {
     validationLink: '',
     resetPasswordUrl: '',
+    changingEmailValidationLink: '',
     refreshToken: '',
     accessToken: '',
 }
@@ -406,6 +407,167 @@ describe('test /auth/signout API', () => {
             console.log('error :>> ', error);
             expect(error).toBeUndefined();
         }
+    });
+});
+
+describe('test /auth/user API', () => {
+    // variable
+    let server;
+    let mockSendChangingEmail;
+    // init
+    beforeAll(() => {
+        jest.resetModules();
+        // mock
+        mockSendChangingEmail = require('../../../utils/aws/ses').sendChangingEmail;
+        jest.mock('../../../utils/aws/ses');
+        // start server
+        const app = require('../../../app');
+        const port = process.env.SERVER_PORT;
+        server = app.listen(port, () => {
+            console.log(`Server running at port: ${port}`);
+        });
+    });
+    // deinit
+    afterAll(() => {
+        server.close();
+    });
+    // test
+    it('POST /auth/user/name :>> 200 OK', async () => {
+        try {
+            const data = {
+                name: process.env.JEST_USER_NEW_NAME,
+            };
+
+            const response = await axios({
+                method: 'POST',
+                baseURL: process.env.SERVER_BASEURL + 'auth/user/',
+                url: '/name',
+                headers: {
+                    Authorization: `Bearer ${mockMeta.accessToken}`
+                },
+                data,
+            });
+
+            expect(response.status).toBe(200);
+        } catch (error) {
+            // console.log('error :>> ', error);
+            expect(error).toBeUndefined();
+        }
+    });
+
+    it('POST /auth/user/birthday :>> 200 OK', async () => {
+        try {
+            const data = {
+                birthday: process.env.JEST_USER_NEW_BIRTHDAY
+            };
+
+            const response = await axios({
+                method: 'POST',
+                baseURL: process.env.SERVER_BASEURL + 'auth/user/',
+                url: '/birthday',
+                headers: {
+                    Authorization: `Bearer ${mockMeta.accessToken}`
+                },
+                data,
+            });
+
+            expect(response.status).toBe(200);
+        } catch (error) {
+            // console.log('error :>> ', error);
+            expect(error).toBeUndefined();
+        }
+    });
+
+    it('POST /auth/user/phone :>> 200 OK', async () => {
+        try {
+            const data = {
+                phone: process.env.JEST_USER_NEW_PHONE
+            };
+
+            const response = await axios({
+                method: 'POST',
+                baseURL: process.env.SERVER_BASEURL + 'auth/user/',
+                url: '/phone',
+                headers: {
+                    Authorization: `Bearer ${mockMeta.accessToken}`
+                },
+                data,
+            });
+
+            expect(response.status).toBe(200);
+        } catch (error) {
+            // console.log('error :>> ', error);
+            expect(error).toBeUndefined();
+        }
+    });
+
+    it('POST /auth/user/gender :>> 200 OK', async () => {
+        try {
+            const data = {
+                gender: process.env.JEST_USER_NEW_GENDER,
+            };
+
+            const response = await axios({
+                method: 'POST',
+                baseURL: process.env.SERVER_BASEURL + 'auth/user/',
+                url: '/gender',
+                headers: {
+                    Authorization: `Bearer ${mockMeta.accessToken}`
+                },
+                data,
+            });
+
+            expect(response.status).toBe(200);
+        } catch (error) {
+            // console.log('error :>> ', error);
+            expect(error).toBeUndefined();
+        }
+    });
+
+    it('POST /auth/user/email :>> 200 OK', async () => {
+        try {
+            const data = {
+                email: process.env.JEST_USER_NEW_EMAIL,
+            };
+
+            const response = await axios({
+                method: 'POST',
+                baseURL: process.env.SERVER_BASEURL + 'auth/user/',
+                url: '/email',
+                headers: {
+                    Authorization: `Bearer ${mockMeta.accessToken}`
+                },
+                data,
+            });
+
+            expect(response.status).toBe(200);
+            expect(mockSendChangingEmail).toHaveBeenCalled();
+
+            mockMeta.changingEmailValidationLink = mockSendChangingEmail.mock.calls[0][1];
+            // console.log('mockSendChangingEmail.mock.calls :>> ', mockSendChangingEmail.mock.calls);
+
+        } catch (error) {
+            // console.log('error :>> ', error);
+            expect(error).toBeUndefined();
+        }
+    });
+
+    it('GET /auth/user/email/:token :>> 200 OK', async () => {
+        try {
+            const response = await axios({
+                method: 'GET',
+                url: mockMeta.changingEmailValidationLink,
+            });
+
+            expect(response.status).toBe(200);
+        } catch (error) {
+            // console.log('error :>> ', error);
+            expect(error).toBeUndefined();
+        }
+    });
+
+    it('DELETE /auth/user :>> 200 OK', async () => {
+
     });
 });
 

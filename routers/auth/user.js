@@ -144,7 +144,6 @@ router.post('/email',
                     throw new Error('updating user-status is failed!');
                 }
                 // OK
-                if (process.env.MODE === 'dev') return res.status(200).json({ linkToken: token });
                 return res.sendStatus(200);
             });
 
