@@ -360,6 +360,35 @@ describe('test /auth/reset API', () => {
             expect(error).toBeUndefined();
         }
     });
+
+    it('Sign in with origin password :>> 200 OK', async () => {
+        try {
+            const data = {
+                email: process.env.JEST_USER_EMAIL,
+                password: process.env.JEST_USER_PASSWORD,
+            };
+
+            const response = await axios({
+                method: 'POST',
+                baseURL: process.env.SERVER_BASEURL + 'auth/signin/',
+                url: '/',
+                data
+            });
+
+            const cookie = response.headers['set-cookie'][0];
+
+            expect(response.status).toBe(200);
+            expect(cookie).toMatch(/^C4RFT.*$/);
+            expect(response.data).toHaveProperty('accessToken');
+
+            mockMeta.refreshToken = cookie.split('; ')[0].split('=')[1];
+            mockMeta.accessToken = response.data.accessToken;
+            // console.log('mockMeta :>> ', mockMeta);
+        } catch (error) {
+            console.log('error :>> ', error);
+            expect(error).toBeUndefined();
+        }
+    });
 });
 
 describe('test /auth/signout API', () => {
@@ -566,8 +595,55 @@ describe('test /auth/user API', () => {
         }
     });
 
-    it('DELETE /auth/user :>> 200 OK', async () => {
+    it('Sign in with new email address :>> 200 OK', async () => {
+        try {
+            const data = {
+                email: process.env.JEST_USER_NEW_EMAIL,
+                password: process.env.JEST_USER_PASSWORD,
+            };
 
+            const response = await axios({
+                method: 'POST',
+                baseURL: process.env.SERVER_BASEURL + 'auth/signin/',
+                url: '/',
+                data
+            });
+
+            const cookie = response.headers['set-cookie'][0];
+
+            expect(response.status).toBe(200);
+            expect(cookie).toMatch(/^C4RFT.*$/);
+            expect(response.data).toHaveProperty('accessToken');
+
+            mockMeta.refreshToken = cookie.split('; ')[0].split('=')[1];
+            mockMeta.accessToken = response.data.accessToken;
+            // console.log('mockMeta :>> ', mockMeta);
+        } catch (error) {
+            console.log('error :>> ', error);
+            expect(error).toBeUndefined();
+        }
+    });
+
+    // TODO: complete...
+    // it('POST /auth/avatar :>> 200 OK', async () => {
+    // });
+
+    it('DELETE /auth/user :>> 200 OK', async () => {
+        try {
+            const response = await axios({
+                method: 'DELETE',
+                baseURL: process.env.SERVER_BASEURL + 'auth/user/',
+                url: '/',
+                headers: {
+                    Authorization: `Bearer ${mockMeta.accessToken}`
+                }
+            });
+
+            expect(response.status).toBe(200);
+        } catch (error) {
+            // console.log('error :>> ', error);
+            expect(error).toBeUndefined();
+        }
     });
 });
 
