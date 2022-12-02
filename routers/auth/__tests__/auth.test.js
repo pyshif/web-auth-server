@@ -236,7 +236,7 @@ describe('test /auth/forgot API', () => {
         server.close();
     });
     // test
-    it('POST /auth/forgot API :>> 200 OK, and receive reset password link', async () => {
+    it('POST /auth/forgot :>> 200 OK, and receive reset password link', async () => {
         try {
             const data = {
                 email: process.env.JEST_USER_EMAIL,
@@ -263,7 +263,7 @@ describe('test /auth/forgot API', () => {
         }
     });
 
-    it('POST /auth/forgot/:token API :>> 200 OK', async () => {
+    it('POST /auth/forgot/:token :>> 200 OK', async () => {
         try {
             const data = {
                 newPassword: process.env.JEST_USER_NEW_PASSWORD,
@@ -275,6 +275,82 @@ describe('test /auth/forgot API', () => {
                 baseURL: process.env.SERVER_BASEURL + 'auth/forgot/',
                 url: mockMeta.resetPasswordUrl,
                 data,
+            });
+
+            expect(response.status).toBe(200);
+        } catch (error) {
+            // console.log('error :>> ', error);
+            expect(error).toBeUndefined();
+        }
+    });
+
+    it('Sign in with new password :>> 200 OK', async () => {
+        try {
+            const data = {
+                email: process.env.JEST_USER_EMAIL,
+                password: process.env.JEST_USER_NEW_PASSWORD,
+            };
+
+            const response = await axios({
+                method: 'POST',
+                baseURL: process.env.SERVER_BASEURL + 'auth/signin/',
+                url: '/',
+                data
+            });
+
+            const cookie = response.headers['set-cookie'][0];
+
+            expect(response.status).toBe(200);
+            expect(cookie).toMatch(/^C4RFT.*$/);
+            expect(response.data).toHaveProperty('accessToken');
+
+            mockMeta.refreshToken = cookie.split('; ')[0].split('=')[1];
+            mockMeta.accessToken = response.data.accessToken;
+            // console.log('mockMeta :>> ', mockMeta);
+        } catch (error) {
+            console.log('error :>> ', error);
+            expect(error).toBeUndefined();
+        }
+    });
+});
+
+describe('test /auth/reset API', () => {
+    // variable
+    let server;
+    // init
+    beforeAll(() => {
+        jest.resetModules();
+        // mock
+        process.env.NODE_ENV = 'development';
+
+        // start server
+        const app = require('../../../app');
+        const port = process.env.SERVER_PORT;
+        server = app.listen(port, () => {
+            console.log(`Server running at port: ${port}`);
+        });
+    });
+    // deinit
+    afterAll(() => {
+        server.close();
+    });
+    // test
+    it('POST /auth/reset :>> 200 OK', async () => {
+        try {
+            // reset password back to origin (pre testing set new)
+            const data = {
+                newPassword: process.env.JEST_USER_PASSWORD,
+                confirmPassword: process.env.JEST_USER_PASSWORD,
+            };
+
+            const response = await axios({
+                method: 'POST',
+                baseURL: process.env.SERVER_BASEURL + 'auth/reset/',
+                url: '/',
+                headers: {
+                    Authorization: `Bearer ${mockMeta.accessToken}`
+                },
+                data
             });
 
             expect(response.status).toBe(200);
