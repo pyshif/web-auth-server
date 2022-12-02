@@ -64,6 +64,17 @@ jobs:
           COOKIE_DOMAIN= ${{ secrets.COOKIE_DOMAIN }}
           COOKIE_SECURE= ${{ secrets.COOKIE_SECURE }}
           COOKIE_HTTPONLY= ${{ secrets.COOKIE_HTTPONLY }}" > .env.dev
+          # JEST
+          JEST_USER_NAME= ${{ secrets.JEST_USER_NAME }}
+          JEST_USER_EMAIL= ${{ secrets.JEST_USER_EMAIL }}
+          JEST_USER_PASSWORD= ${{ secrets.JEST_USER_PASSWORD }}
+          JEST_USER_PASSWORD_HINT= ${{ secrets.JEST_USER_PASSWORD_HINT }}
+          JEST_USER_NEW_NAME= ${{ secrets.JEST_USER_NEW_NAME }}
+          JEST_USER_NEW_EMAIL= ${{ secrets.JEST_USER_NEW_EMAIL }}
+          JEST_USER_NEW_PASSWORD= ${{ secrets.JEST_USER_NEW_PASSWORD }}
+          JEST_USER_NEW_GENDER= ${{ secrets.JEST_USER_NEW_GENDER }}
+          JEST_USER_NEW_PHONE= ${{ secrets.JEST_USER_NEW_PHONE }}
+          JEST_USER_NEW_BIRTHDAY= ${{ secrets.JEST_USER_NEW_BIRTHDAY }}
           ls -al
           cat .env.dev
 
