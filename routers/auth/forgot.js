@@ -36,7 +36,6 @@ router.post('/', validateForgotPayload, async (req, res) => {
                 return res.status(403).end();
             }
 
-            if (process.env.MODE === 'dev') return res.status(200).json({ linkToken: token })
             return res.sendStatus(200);
         });
 
