@@ -27,4 +27,4 @@ else if (process.env.NODE_ENV === 'production') {
 }
 
 require('dotenv').config({ path: `.env.${mode}` });
-console.log('process.env :>> ', process.env);
+// console.log('process.env :>> ', process.env);
