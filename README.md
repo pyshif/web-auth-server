@@ -10,6 +10,9 @@ web-auth 以及 web-auth-server 是實作 JWT（Json Web Token）、Google Sign 
 - [目錄](#目錄)
 - [安裝](#安裝)
 - [運行](#運行)
+- [測試](#測試)
+  - [Github Action](#github-action)
+  - [Jest](#jest)
 - [專案結構](#專案結構)
   - [環境變數](#環境變數)
   - [伺服器運行](#伺服器運行)
@@ -110,6 +113,53 @@ web-auth 以及 web-auth-server 是實作 JWT（Json Web Token）、Google Sign 
     ```bash
     npm run log
     ```
+
+<p align="right">
+    <a href="#目錄">回目錄</a>
+</p>
+
+## 測試 
+
+測試框架使用 Jest，自動化流程使用 GitHub Action
+
+### Github Action
+
+上傳至 main 分支時，自動觸發 CI，大致流程如下：
+
+- 建立環境檔（.env.dev）
+- 建立設定檔（AWS SES）
+- 運行乾淨的資料庫 MySQL 5.7
+- 安裝專案環境
+- 運行測試檔
+
+### Jest
+
+目前測試狀況
+
+- Jest: 以撰寫測試檔，並包含在 CI 流程中
+- Manual: 手動測試
+
+| API | Description |
+|------|-------------|
+| `POST /auth/signup` | Jest |
+| `GET /auth/signup/:token` | Jest |
+| `POST /auth/signin` | Jest |
+| `POST /auth/google/popup` | Manual |
+| `GET /auth/token` | Jest |
+| `GET /auth/token/new` | Jest |
+| `DELETE /auth/signout` | Jest |
+| `POST /auth/forgot` | Jest |
+| `POST /auth/forgot/:token` | Jest |
+| `POST /auth/reset` | Jest |
+| `DELETE /auth/user` | Jest |
+| `POST /auth/user/name` | Jest |
+| `POST /auth/user/birthday` | Jest |
+| `POST /auth/user/phone` | Jest |
+| `POST /auth/user/gender` | Jest |
+| `POST /auth/user/avatar` | Manual |
+| `POST /auth/user/email` | Jest |
+| `POST /auth/user/email/:token` | Jest |
+| `POST /help/tellme` | Jest |
 
 <p align="right">
     <a href="#目錄">回目錄</a>
