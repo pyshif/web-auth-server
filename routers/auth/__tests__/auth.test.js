@@ -1,4 +1,9 @@
+// const FormData = require('form-data');
+// const { Blob } = require('buffer');
+// const fs = require('fs/promises');
+// const path = require('path');
 const axios = require('axios');
+
 
 // store info between testings
 const mockMeta = {
@@ -624,8 +629,32 @@ describe('test /auth/user API', () => {
         }
     });
 
-    // TODO: complete...
+    // FIXME: 'multer' doesn't work on test
     // it('POST /auth/avatar :>> 200 OK', async () => {
+    //     // generate jpeg/png mimetype data
+    //     const avatarBuffer = await fs.readFile(path.join(__dirname, './test.jpg'));
+    //     // console.log('avatar :>> ', avatar);
+    //     const data = new FormData();
+    //     data.append('avatar', avatarBuffer);
+    //     // console.log('data :>> ', data);
+    //     try {
+    //         const response = await axios({
+    //             method: 'POST',
+    //             baseURL: process.env.SERVER_BASEURL + 'auth/user/',
+    //             url: '/avatar',
+    //             headers: {
+    //                 Authorization: `Bearer ${mockMeta.accessToken}`,
+    //                 'Content-Type': 'multipart/form-data'
+    //             },
+    //             data,
+    //         });
+
+    //         // console.log('response :>> ', response);
+    //         expect(response.status).toBe(200);
+    //     } catch (error) {
+    //         // console.log('error :>> ', error);
+    //         expect(error).toBeUndefined();
+    //     }
     // });
 
     it('DELETE /auth/user :>> 200 OK', async () => {

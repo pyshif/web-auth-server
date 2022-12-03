@@ -200,6 +200,13 @@ const storageAvatar = multer.diskStorage({
 const uploadAvatar = multer({
     storage: storageAvatar,
     fileFilter: (req, file, cb) => {
+        // file {
+        //     fieldname: 'avatar',
+        //     originalname: 'avatar-example.jpg',
+        //     encoding: '7bit',
+        //     mimetype: 'image/jpeg'
+        // }
+        console.log('file :>> ', file);
         if (file.mimetype !== 'image/jpeg' &&
             file.mimetype !== 'image/png') {
             cb(new Error('avatar mimetype invalid!'), false);
